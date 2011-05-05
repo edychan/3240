@@ -1,0 +1,107 @@
+* DL-EGE
+* print ra program for symbol 3240
+*
+* 01.15.98: change CONFESSION FEE to ARPT ACCESS FEE
+private yline, yfld
+set console off
+set print on
+set printer to &gprinter
+* set printer to xxx         && debug
+?
+? gtitle
+?
+? "RA# "+trim(l_floc)+"-"+str(l_frano,6)+space(6)+"Oper : "+xoper
+? l_fname
+? "OUT: "+dtoc(l_fdateout)+" "+l_ftimeout+space(2)+"UNIT : "+alltrim(l_funit)
+? "IN : "+dtoc(l_fdatein)+" "+l_ftimein+space(2)+"CLASS: "+l_fclass
+? "MILES DRIVEN: "+str(l_fmlg,5)+space(2)+"LOC  : "+alltrim(gloc)
+?
+if l_fmlgtot > 0
+   yline = f_truncate (str(l_fmlgs,6)+" @ "+str(l_fmlgchg,7,2) ,16)+  ;
+           " = "+str(l_fmlgtot,13,2)
+   ? yline
+endif
+if l_fhrtot > 0
+   yline = f_truncate (str(l_fhr,3)+" HR @ "+str(l_fhrchg,7,2), 16)+  ;
+           " = "+str(l_fhrtot,13,2)
+   ? yline
+endif
+if l_fdlytot > 0
+   yline = f_truncate (str(l_fdly,3)+" DY @ "+str(l_fdlychg,7,2), 16)+  ;
+           " = "+str(l_fdlytot,13,2)
+   ? yline
+endif
+if l_fwktot > 0
+   yline = f_truncate (str(l_fwk,3)+" WK @ "+str(l_fwkchg,7,2), 16)+  ;
+           " = "+str(l_fwktot,13,2)
+   ? yline
+endif
+if l_fmthtot > 0
+   yline = f_truncate (str(l_fmth,3)+" MO @ "+str(l_fmthchg,7,2), 16)+  ;
+           " = "+str(l_fmthtot,13,2)
+   ? yline
+endif
+if l_fcdwtot > 0
+   ? "  CDW CHARGE     = " + str(l_fcdwtot,13,2)
+endif
+if l_fpaitot > 0
+   ? "  PAI CHARGE     = " + str(l_fpaitot,13,2)
+endif
+if l_ffueltot > 0
+   ? "  FUEL CHARGE    = " + str(l_ffueltot,13,2)
+endif
+* add'l charge
+if l_fotot1 > 0
+   ? f_truncate ("  " + l_foitem1, 16) + " = " + str(l_fotot1,13,2)
+endif
+if l_fotot2 > 0
+   ? f_truncate ("  " + l_foitem2, 16) + " = " + str(l_fotot2,13,2)
+endif
+if l_fotot3 > 0
+   ? f_truncate ("  " + l_foitem3, 16) + " = " + str(l_fotot3,13,2)
+endif
+if l_fotot4 > 0
+   ? f_truncate ("  " + l_foitem4, 16) + " = " + str(l_fotot4,13,2)
+endif
+if l_fsurchg > 0
+   ? "  AIRP ACCESS FEE= " + str(l_fsurchg,13,2)
+endif
+if l_ftaxtot > 0
+   ? f_truncate ("  TAX  @ "+str(l_ftax,7,2), 16)+"%= "+str(l_ftaxtot,13,2)
+endif
+if l_fdisctot > 0
+   ? " LESS DISCOUNT   = " + str(l_fdisctot,13,2)
+endif
+?
+? "         TOTAL   = " + str(l_ftotal,13,2)
+if l_fdepamt > 0
+   ? "  LESS DEPOSIT   = " + str(l_fdepamt,13,2)
+   ? "       NET DUE   = " + str(l_famtdue,13,2)
+endif
+* need to only print last 4 digits of cc #
+yfld = alltrim(l_fccnum1)
+yfld = substr(yfld, len(yfld)-3)
+?
+? "BILL TO:  " + l_fpaytyp1 + yfld
+?
+? "FOR CUSTOMER INQUIRIES PLEASE CALL"
+? space(10)+gphone
+?
+?
+?
+? "THANK YOU FOR RENTING FROM US"
+? "      This is your receipt."
+? "No other copies will be provided."
+? "Closed rental subject to final audit"
+?
+?
+?
+?
+?
+
+set print off
+set printer to
+set console on
+set device to screen
+
+

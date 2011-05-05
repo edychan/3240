@@ -1,0 +1,33 @@
+! 0 200 200 1300 1
+LABEL
+CONTRAST 0
+TONE 0
+SPEED 5
+PAGE-WIDTH 500
+BAR-SENSE
+;// PAGE 0000000005001300
+;//{{BEGIN-BT
+T 7 1 43 80 DOLLAR RENT A CAR - EGE                 
+T 7 1 43 125 RA# EGE-185185      Oper : RAC
+T 7 1 43 170 WILLIAM MARLOWE
+T 7 1 43 215 OUT: 11/29/06 13:02  UNIT : CA88986
+T 7 1 43 260 IN : 12/14/06 19:03  CLASS: MVAR
+T 7 1 43 305 MILES DRIVEN:   305  LOC  : EGE
+T 7 1 43 350   2 DY @   33.33 =         66.66
+T 7 1 43 395   2 WK @  199.99 =        399.98
+T 7 1 43 440   FUEL CHARGE    =         60.00
+T 7 1 43 485   UP             =        160.00
+T 7 1 43 530   AR             =         80.00
+T 7 1 43 575   AIRP ACCESS FEE=        122.66
+T 7 1 43 620   TAX  @   10.40%=         73.49
+T 7 1 43 665          TOTAL   =        962.79
+T 7 1 43 710 BILL TO:  MC 4749
+T 7 1 43 755 FOR CUSTOMER INQUIRIES PLEASE CALL
+T 7 1 43 800           1-800-555-1212      
+T 7 1 43 845 THANK YOU FOR RENTING FROM US
+T 7 1 43 890       This is your receipt.
+T 7 1 43 935 No other copies will be provided.
+T 7 1 43 980 Closed rental subject to final audit
+;//{{END-BT
+FORM
+PRINT
