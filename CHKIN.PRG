@@ -53,6 +53,9 @@ declare l_FWKMLG,l_FMILEAGE,l_FSURCHG,l_FOTHCHG
 declare l_fduein, l_ftmechg, l_festchg
 * -- 07.15.10: Jackson surchrge calc. include; IF(L_FREFERAL = 'LOCAL' ...
 declare L_FREFERAL, L_FDMGTOT, l_femail      && 05.04.11
+declare l_fdmgtot, l_fcredtot, l_ftmetot, l_fmlgtot, l_fdisctot, l_fcdwtot 
+declare l_fpaitot, l_ffueltot, l_fsurchg, l_fothtot1, l_fothtot2, l_ftaxtot
+declare l_ftotal, l_famtdue, l_fname, l_fdatein, l_ftimein
 *
 
 do while .t.
@@ -73,13 +76,15 @@ do while .t.
    l_fmlgin = 0
    l_ffuelin = 0
    l_funit = space(10)
-   l_femail = space(35)
+   l_femail = ""
+   ysave = .f.
    @ 00, 08 get gdate pict "@D" valid ;       && 01.02.07
      f_valid(.not.empty(gdate).and.f_y2k(@gdate))
    @ 01, 08 get l_funit pict "!!!!!!!!!!" valid f_ckunit ()
    @ 05, 08 get l_fmlgin  pict "999999" valid f_ckmlg ()
    @ 06, 08 get l_ffuelin pict "9" valid f_calrate ()
-   if f_rd () = 27 .or. empty(l_funit)
+   
+   if f_rd () = 27 
       exit
    *elseif lastkey () = 27
    *   if raagr->frastat = "X"
@@ -90,6 +95,31 @@ do while .t.
    *      unlock
    *   endif
    endif
+   * --05.05.11: prompt for email
+   e1 = f_truncate(substr(l_femail,1,20),20)
+   e2 = f_truncate(substr(l_femail,21),20)
+   @ 00, 01 say "Date : "+dtoc(gdate)
+   @ 01, 01 say "Unit : "+l_funit
+   @ 04, 01 clear to 06,30
+   @ 04, 01 say "Total: " + alltrim(str(l_ftotal,8,2))
+   @ 06, 01 say "Email:"
+   ysave = .t.
+   do while .t.
+      @ 06, 08 get e1 picture replicate ("x", 20)
+	  @ 07, 08 get e2 picture replicate ("x", 20)
+	  if f_rd () = 27
+	     ysave = .f.
+	  endif	 
+	  l_femail = alltrim(e1)+alltrim(e2)
+	  if f_valid (f_goodem(l_femail, .t.), "NA if NONE!")      && allow NA as valid email
+	     exit
+	  endif
+   enddo
+   
+   if ysave
+      ysave = f_save ()
+   endif
+   
    *close data
    *
 enddo
@@ -142,9 +172,18 @@ if l_ftotal <= 0
    return .f.
 endif
 ***
-@ 07, 01 say "Total: "+alltrim(str(l_ftotal,8,2))
+
+* @ 07, 01 say "Total: "+alltrim(str(l_ftotal,8,2))
 @ 08, 01 say "<Enter> | <Esc> "                               
-yans = inkey(0)
+
+return .t.
+
+* ===================
+* --05.05.11: save transit ra
+* ===================
+function f_save
+
+yans = 13     && set this to always save for paperless-ra
 if yans = 13 .or. yans = 49
 
    * -- 05.04.11: turn off print
@@ -168,25 +207,12 @@ if yans = 13 .or. yans = 49
    * --
    *do rrprint
 
-   * prompt for email
-   l_femail = if(empty(l_femail),"Enter email",l_femail)
-   yemail = f_truncate (l_femail,30)
-   @ 08, 00 clear to 08, 30
-   do while .t.
-      f_getfld (@yemail, 8, 01, "")
-      if f_goodem (yemail, .t.)     && allow [NA] as valid email
-        l_femail = yemail 
-        exit
-	  else
-         tone (500, 9)	  
-	  endif
-   enddo
    * 05.04.11 --
-
    if .not.xonline    && debug mode
-     do rrprint 
-     close all
-     quit
+      do rrprint
+      f_valid (.f., "debug mode (xxx.prn)")
+	  close all
+      quit
    endif
    *
    @ 08, 00 clear to 08, 30
@@ -301,7 +327,8 @@ function f_ckunit
 private yfil, yntx1, yflg
 
 if empty(l_funit)
-   return .t.
+   f_valid (.f., "Invalid Unit #!")
+   return .f.
 endif
 
 yflg = .t.
