@@ -58,6 +58,12 @@ declare l_fpaitot, l_ffueltot, l_fsurchg, l_fothtot1, l_fothtot2, l_ftaxtot
 declare l_ftotal, l_famtdue, l_fname, l_fdatein, l_ftimein
 *
 
+gdate = date()        && 01.02.07
+l_frano = 0
+l_fmlgin = 0
+l_ffuelin = 0
+l_funit = space(10)
+l_femail = ""
 do while .t.
    @ 07, 03 say "Please Wait..."
    *
@@ -71,12 +77,6 @@ do while .t.
    @ 06, 01 say "Fuel :"
    @ 06, 12 say "/8"
 
-   gdate = date()        && 01.02.07
-   l_frano = 0
-   l_fmlgin = 0
-   l_ffuelin = 0
-   l_funit = space(10)
-   l_femail = ""
    ysave = .f.
    @ 00, 08 get gdate pict "@D" valid ;       && 01.02.07
      f_valid(.not.empty(gdate).and.f_y2k(@gdate))
@@ -112,14 +112,26 @@ do while .t.
 	  endif	 
 	  l_femail = alltrim(e1)+alltrim(e2)
 	  if f_valid (f_goodem(l_femail, .t.), "NA if NONE!")      && allow NA as valid email
-	     exit
+	     @ 06, 08 clear 07, 30
+         @ 06, 08 say substr(l_femail,1,20)
+		 @ 07, 08 say substr(l_femail,21)
+         exit
 	  endif
    enddo
-   
+      
    if ysave
-      ysave = f_save ()
-   endif
-   
+	  if .not. f_save ()
+         return
+      endif
+   else
+      loop
+   endif	 
+   gdate = date()        && 01.02.07
+   l_frano = 0
+   l_fmlgin = 0
+   l_ffuelin = 0
+   l_funit = space(10)
+   l_femail = ""
    *close data
    *
 enddo
@@ -210,12 +222,14 @@ if yans = 13 .or. yans = 49
    * 05.04.11 --
    if .not.xonline    && debug mode
       do rrprint
-      f_valid (.f., "debug mode (xxx.prn)")
-	  close all
-      quit
+	  tone (500,9)
+      @ 08, 00 clear to 08, 20
+	  @ 08, 01 say "Debug mode!"
+	  inkey(0)
+      return .f.
    endif
    *
-   @ 08, 00 clear to 08, 30
+   @ 08, 00 clear to 08, 20
    @ 08, 01 say "UPDATING UNIT....."
    yfil = gpath + "ravm.dbf"
    if .not. file (yfil)
