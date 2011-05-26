@@ -21,7 +21,8 @@
 * 05.04.11: add paperless
 *           - add femail field in raagrt
 *           - turn off print
-*           - prompt for email        
+*           - prompt for email     
+* 05.24.11: add 4th checkin screen   
 * =========================================================================
 set confirm on
 
@@ -95,26 +96,71 @@ do while .t.
    *      unlock
    *   endif
    endif
+   ij = 8   && space
+   * screen 2
+   clear
+   @ 00, 01 say f_truncate ("TIME", ij) + ": " + str(l_fhrtot+l_fdlytot+l_fwkdtot+l_fwktot,10,2)
+   @ 01, 01 say f_truncate ("MLG", ij) + ": " + str(l_fmlgtot,10,2)
+   @ 02, 01 say f_truncate ("CDW", ij) + ": " + str(l_fcdwtot,10,2)
+   @ 03, 01 say f_truncate ("PEC", ij) + ": " + str(l_fpaitot,10,2)
+   @ 04, 01 say f_truncate ("TAX", ij) + ": " + str(l_ftaxtot,10,2)
+   @ 05, 01 say f_truncate ("SURC", ij) + ": " + str(l_fsurchg,10,2)
+   @ 06, 11 say "----------"
+   @ 08,01 say "<Press any key>"
+   inkey(0)
+
+   * 05.25.11: add screen 3
+   clear
+   ii = 0
+   if (l_fotot1 > 0)
+      @ ii, 01 say f_truncate (l_foitem1, ij) + ": " + str(l_fotot1, 10,2))    
+	  ii = ii + 1
+   endif	  
+   if (l_fotot2 > 0)
+      @ ii, 01 say f_truncate (l_foitem2, ij) + ": " + str(l_fotot2, 10,2))    
+	  ii = ii + 1
+   endif	  
+   if (l_fotot3 > 0)
+      @ ii, 01 say f_truncate (l_foitem3, ij) + ": " + str(l_fotot3, 10,2))    
+	  ii = ii + 1
+   endif	  
+   if (l_fotot4 > 0)
+      @ ii, 01 say f_truncate (l_foitem4, ij) + ": " + str(l_fotot4, 10,2))    
+	  ii = ii + 1
+   endif	  
+   if (l_fotot5 > 0)
+      @ ii, 01 say f_truncate (l_foitem5, ij) + ": " + str(l_fotot5, 10,2))    
+	  ii = ii + 1
+   endif	  
+   if (l_fotot6 > 0)
+      @ ii, 01 say f_truncate (l_foitem6, ij) + ": " + str(l_fotot6, 10,2))    
+	  ii = ii + 1
+   endif	  
+   @ ii, 11 say "----------" 
+   @ ii+1, 01 say "TOTAL   : " + str(l_ftotal,10,2)
+   @ 08,01 say "<Press any key>"
+   inkey(0)
+
+   * Final screen
    * --05.05.11: prompt for email
    e1 = f_truncate(substr(l_femail,1,20),20)
    e2 = f_truncate(substr(l_femail,21),20)
-   @ 00, 01 say "Date : "+dtoc(gdate)
-   @ 01, 01 say "Unit : "+l_funit
-   @ 04, 01 clear to 06,30
-   @ 04, 01 say "Total: " + alltrim(str(l_ftotal,8,2))
-   @ 06, 01 say "Email:"
+   clear
+   @ 00, 01 say "TTL  : USD$ "+alltrim(str(l_ftotal,10,2)) 
+   @ 01, 01 say "Email:"
+   @ 08, 01 say "<Enter> to Save | <Esc> "                               
    ysave = .t.
    do while .t.
-      @ 06, 08 get e1 picture replicate ("x", 20)
-	  @ 07, 08 get e2 picture replicate ("x", 20)
+      @ 01, 08 get e1 picture replicate ("x", 20)
+	  @ 02, 08 get e2 picture replicate ("x", 20)
 	  if f_rd () = 27
 	     ysave = .f.
 	  endif	 
 	  l_femail = alltrim(e1)+alltrim(e2)
 	  if f_valid (f_goodem(l_femail, .t.), "NA if NONE!")      && allow NA as valid email
-	     @ 06, 08 clear 07, 30
-         @ 06, 08 say substr(l_femail,1,20)
-		 @ 07, 08 say substr(l_femail,21)
+	     @ 01, 08 clear 02, 30
+         @ 01, 08 say substr(l_femail,1,20)
+		 @ 02, 08 say substr(l_femail,21)
          exit
 	  endif
    enddo
@@ -184,9 +230,6 @@ if l_ftotal <= 0
    return .f.
 endif
 ***
-
-* @ 07, 01 say "Total: "+alltrim(str(l_ftotal,8,2))
-@ 08, 01 say "<Enter> | <Esc> "                               
 
 return .t.
 
